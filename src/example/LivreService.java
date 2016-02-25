@@ -1,7 +1,6 @@
 package example;
 
 
-import com.sun.jersey.api.json.JSONConfiguration;
 import model.Livre;
 import singleton.Singleton;
 
