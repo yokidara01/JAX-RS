@@ -23,6 +23,7 @@ public class LivreService{
 
         @GET
         @Path("/test")
+        @Produces("application/json")
 
         public String test() {
             return "test";
@@ -68,7 +69,7 @@ public class LivreService{
 
 
 
-    @POST
+    @GET
     @Path("/AddLivre/isbn-{isbn}-titre-{titre}-auteur-{auteur}")
     // The Java method will produce content identified by the MIME Media type "text/plain"
     //@Produces({MediaType."application/json",MediaType."application/xml"})
@@ -126,6 +127,34 @@ public class LivreService{
         }
 
         return  le ;
+
+    }
+
+
+    @GET
+    @Path("/delete/isbn-{isbn}")
+    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    public String delete(@PathParam("isbn") String isbn)
+    {
+
+
+
+        Connection cn = Singleton.getInstance() ;
+
+        try {
+            Statement st= cn.createStatement();
+            String req="DELETE from livre where isbn='"+isbn+"'"  ;
+            System.out.println(req) ;
+           st.executeUpdate(req);
+
+        } catch (SQLException ex) {
+            // TODO Auto-generated catch block
+            ex.printStackTrace();
+
+
+        }
+
+        return "done";
 
     }
 }
