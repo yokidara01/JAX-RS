@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
   <head>
-    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery-2.2.1.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/js.js"></script>
 
     <link rel="stylesheet" type="text/css" href="js/styles.css">

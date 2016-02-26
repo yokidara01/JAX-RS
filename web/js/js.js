@@ -22,17 +22,26 @@ function findAll() {
 
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/rest/livre"+"/getAll",
-        dataType: "json",
+        url: "http://localhost:8080/rest/livre/getAll",
+        dataType: "xml",
         cache: false,
-        contentType: "application/json",
-        success: function(data) {
 
-           // $('#folio').html("<ul/>");
-            $.each(data.posts, function(i,post){
-                $('#tl_list ul').append('<li>post.titre</li>');
+        success: function(xml){
+            var total="";
+            $(xml).find('livre').each(function(){
+
+                var isbn = $(this).find('isbn').text();
+
+                var titre = $(this).find('titre').text();
+
+                $("<li></li>").html(titre + ", " + isbn).appendTo("tl_List ul");
+
+                total+=isbn+titre;
             });
+            alert(total);
+
         },
+
         error: function(xhr, status, error) {
             alert(xhr.status);
         }
