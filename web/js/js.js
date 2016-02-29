@@ -18,6 +18,15 @@ findAll();
 });
 
 
+
+$('#btnSearch').click(
+    function() {
+
+        search($('#searchKey').val());
+
+        return false;
+    });
+
 function findAll() {
 
     $.ajax({
@@ -26,70 +35,39 @@ function findAll() {
         dataType: "xml",
         cache: false,
 
-        success: function(xml){
-            var total="";
-            $(xml).find('livre').each(function(){
-
-                var isbn = $(this).find('isbn').text();
-
-                var titre = $(this).find('titre').text();
-
-                $("<li></li>").html(titre + ", " + isbn).appendTo("tl_List ul");
-
-                total+=isbn+titre;
-            });
-            alert(total);
-
-        },
+        success:renderList,
 
         error: function(xhr, status, error) {
             alert(xhr.status);
         }
     });
+}
+
+    function renderList(xml) {
+        // JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
+        $('#tl_list li').remove();
+        {
+            var  isbn= "";
+
+            $(xml).find('livre').each(function () {
+                isbn=$(this).find('isbn').text();
+                $('#tl_List').append('<li><a href="#" data-identity="' + $(this).find('isbn').text() +'">'+$(this).find('titre').text()+'</a></li>');
+
+            });
 
 
 
-
-
-
-
-
-
-  /*  $.ajax({
-        type: 'GET',
-        url: "http://localhost:8080/rest/livre"+"/getAll",
-        dataType:  "json",  //"text" // type de la réponse
-
-        success:renderList,
-        error: function(jqXHR, textStatus, errorThrown){
-            alert('error'+textStatus);
         }
-    });*/
-}
-
-function renderList(data) {
-    console.log(data);
-    var list_tl = data;
-
-    $('#tl_list li').remove();
-    $('#tl_list').append('<li><a href="#">ghgh</a></li>');
-    alert(data);
-    /*$.each(list_tl, function(index, tl) {
-
-        $('#tl_list').append('<li><a href="#">ghgh</a></li>');
-    });*/
-
-}
+    }
 
 
-//click  sur le bouton rechercher
-$('#btnSearch').click(
-    function() {
-        search($('#searchKey').val());
-        return false;
-    });
 
-function search(searchKey) {
+
+
+function search() {
+     var searchKey = document.getElementById("searchKey").value;
+
+
     if (searchKey == '')
         findAll();
     else
@@ -99,9 +77,60 @@ function search(searchKey) {
 function findByName(searchKey) {
 
     $.ajax({
-        type: 'GET',
-        url: rootURL + '/search/' + searchKey,
-        dataType: "json",
-        success: renderList
+        type: "GET",
+        url: "http://localhost:8080/rest/livre/search/isbn-"+searchKey,
+        dataType: "xml",
+        cache: false,
+
+        success:renderList,
+
+        error: function(xhr, status, error) {
+            alert(xhr.status);
+        }
     });
+
+
+
+}
+
+
+function callSave() {
+
+
+
+
+
+    var titre,auteur,isbn;
+    titre = document.getElementById("titre").value;
+    isbn= document.getElementById("isbn").value;
+    auteur= document.getElementById("auteur").value;
+    var data ='{"isbn": "'+isbn+'","titre": "'+titre+'", "auteur":"'+auteur+'" }';
+
+
+
+
+
+    $.ajax({
+        type: 'POST',
+        url: "http://localhost:8080/rest/livre/post",
+        dataType : "json",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(data),
+        success: findAll(),
+        error: function() {
+            alert("");
+        }
+    });
+
+}
+
+
+
+
+
+function save()
+{
+
+    callSave() ;
+
 }

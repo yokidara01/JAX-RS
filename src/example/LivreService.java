@@ -2,10 +2,14 @@ package example;
 
 
 import model.Livre;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import singleton.Singleton;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,12 +72,13 @@ public class LivreService{
 
 
 
-    @GET
-    @Path("/AddLivre/isbn-{isbn}-titre-{titre}-auteur-{auteur}")
+    @POST
+    @Path("/AddLivre")
+
     // The Java method will produce content identified by the MIME Media type "text/plain"
     //@Produces({MediaType."application/json",MediaType."application/xml"})
-    @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
-    public void addLivre(@PathParam("isbn") String isbn, @PathParam("titre") String titre, @PathParam("auteur") String auteur) {
+
+    public void addLivre(@QueryParam("isbn") String isbn, @QueryParam("titre") String titre, @QueryParam("auteur") String auteur) {
 
 
         Connection cn = Singleton.getInstance() ;
@@ -154,6 +159,54 @@ public class LivreService{
         }
 
         return "done";
+
+    }
+
+
+
+
+
+    @POST
+    @Path("/post")
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public void createTrackInJSON(String s) {
+        s=s.replace("\\","");
+        s=s.substring(1) ;
+       s= s.substring(0,s.length()-1);
+        System.out.println(s+"      ****************");
+        String result = "Track saved : " + s;
+
+        try {
+            JSONObject jsonObj = new JSONObject(s);
+           String isbn = (String) jsonObj.get("isbn");
+            String titre = (String) jsonObj.get("titre");
+            String auteur = (String) jsonObj.get("auteur");
+
+            Connection cn = Singleton.getInstance() ;
+
+            try {
+                Statement st= cn.createStatement();
+                String req="INSERT INTO `livre`(`isbn`, `titre`, `auteur`) VALUES ('"+isbn+"','"+titre+"','"+auteur+"')"  ;
+                System.out.println(req) ;
+                st.executeUpdate(req);
+
+
+            } catch (SQLException ex) {
+                // TODO Auto-generated catch block
+                ex.printStackTrace();
+
+
+            }
+
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
 
     }
 }
