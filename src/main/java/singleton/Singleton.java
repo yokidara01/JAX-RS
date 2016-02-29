@@ -1,5 +1,6 @@
 package singleton;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -12,8 +13,13 @@ public class Singleton {
 
     private Singleton(){
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-            cn= DriverManager.getConnection("jdbc:mysql://localhost/servicedb","root","");
+            URI dbUri = new URI(System.getenv("DATABASE_URL"));
+
+            String username = dbUri.getUserInfo().split(":")[0];
+            String password = dbUri.getUserInfo().split(":")[1];
+            String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+
+            cn= DriverManager.getConnection(dbUrl, username, password);
         }catch(Exception e){
             System.err.println("****************** Erreur Singleton");
             e.printStackTrace();
